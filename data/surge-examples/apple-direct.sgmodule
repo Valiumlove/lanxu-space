@@ -1,0 +1,8 @@
+#!name=Apple 直连
+#!desc=Apple 与 iCloud 常用域名直连示例。
+
+[Rule]
+DOMAIN-SUFFIX,apple.com,DIRECT
+DOMAIN-SUFFIX,icloud.com,DIRECT
+DOMAIN-SUFFIX,icloud.com.cn,DIRECT
+DOMAIN-SUFFIX,mzstatic.com,DIRECT

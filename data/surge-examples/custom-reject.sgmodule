@@ -1,0 +1,6 @@
+#!name=自定义屏蔽示例
+#!desc=示例域名，请替换为需要屏蔽的实际域名。
+
+[Rule]
+DOMAIN,ads.example.com,REJECT
+DOMAIN-SUFFIX,tracking.example.org,REJECT

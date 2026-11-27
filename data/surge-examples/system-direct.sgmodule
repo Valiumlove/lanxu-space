@@ -1,0 +1,5 @@
+#!name=系统服务直连
+#!desc=使用 Surge 内置 SYSTEM 规则集配置直连。
+
+[Rule]
+RULE-SET,SYSTEM,DIRECT

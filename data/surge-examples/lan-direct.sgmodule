@@ -1,0 +1,5 @@
+#!name=局域网直连
+#!desc=使用 Surge 内置 LAN 规则集配置直连。
+
+[Rule]
+RULE-SET,LAN,DIRECT
