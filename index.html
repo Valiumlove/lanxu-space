@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#efedf5" />
+    <meta
+      name="description"
+      data-i18n-content="page.description"
+      content="精选 Surge、Egern 与 Mihomo 规则、小组件及模块。发现、预览、收藏，让每一次连接更从容。"
+    />
+    <title data-i18n="page.title">Lanxu Space · 让连接更从容</title>
+    <link rel="icon" href="favicon.ico?v=bars-a1" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=bars-a1" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=bars-a1" />
+    <link rel="stylesheet" href="styles.css?v=compact-home-1" />
+    <script src="i18n.js?v=compact-home-1" defer></script>
+    <script src="upstream.js?v=compact-home-2" defer></script>
+    <script src="module-source.js" defer></script>
+    <script src="resource-icons.js" defer></script>
+    <script src="motion.js?v=compact-home-1" defer></script>
+    <script src="egern-source.js?v=compact-home-1" defer></script>
+    <script src="resource-content.js" defer></script>
+    <script src="resource-i18n.js" defer></script>
+    <script src="app.js?v=compact-home-2" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="#" class="brand" aria-label="Lanxu Space 首页" data-i18n-aria-label="brand.home">
+          <span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i
+          ></span>
+          <span
+            >lanxu<span class="brand-light">space</span
+            ><span class="brand-period">.</span></span
+          >
+        </a>
+        <div class="header-actions">
+          <button class="guide-link" data-guide>
+            <span data-i18n="header.guide">使用指南</span> <span data-icon="arrow-up-right"></span>
+          </button>
+          <span class="header-caption">Surge · Egern · Mihomo</span><span class="header-divider"></span>
+          <label class="language-control">
+            <select id="language-select" aria-label="选择网站语言" data-i18n-aria-label="header.language">
+              <option value="zh-CN" lang="zh-CN">简体中文</option>
+              <option value="en" lang="en">English</option>
+            </select>
+            <span class="language-chevron" aria-hidden="true">⌄</span>
+          </label>
+          <button
+            class="icon-button theme-toggle"
+            id="theme-toggle"
+            aria-label="切换到深色模式"
+          >
+            <span data-icon="sun"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero page-width" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow">
+          <span class="live-dot"></span> A LITTLE SPACE. BETTER CONNECTIONS.
+          </div>
+          <h1 id="hero-title" data-i18n-html="hero.title">让连接世界，<br />变得<span class="highlight">从容一点<span class="highlight-dot">.</span></span></h1>
+          <p class="hero-description" data-i18n-html="hero.description">
+            好用的规则、实用的模块、恰到好处的小组件。<br />为 Surge、Egern 与 Mihomo，整理你的每一种连接。
+          </p>
+          <div class="client-switch" role="group" aria-label="选择客户端" data-i18n-aria-label="client.choose">
+            <button class="active" data-client="surge" aria-pressed="true"><img class="client-symbol" src="assets/clients/surge.png" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Surge</button>
+            <button data-client="egern" aria-pressed="false"><img class="client-symbol" src="assets/clients/egern.png" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Egern</button>
+            <button data-client="mihomo" aria-pressed="false"><img class="client-symbol" src="assets/clients/mihomo.jpg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Mihomo<span class="new-badge">NEW</span></button>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-dark" href="#explore"
+              ><span data-i18n="hero.explore">发现好资源</span> <span data-icon="arrow-right"></span
+            ></a>
+            <button class="button button-text" data-guide>
+              <span data-icon="play-circle"></span> <span data-i18n="hero.how">如何使用</span>
+            </button>
+          </div>
+          <div class="hero-note">
+            <span data-icon="check-circle"></span> <span data-i18n="hero.open">开源可追溯</span>
+            <span class="note-dot">·</span> <span data-i18n="hero.copy">内容可复制</span>
+            <span class="note-dot">·</span> <span data-i18n="hero.combine">自由组合</span>
+          </div>
+        </div>
+
+      </section>
+
+      <section
+        class="resource-section page-width"
+        id="explore"
+        aria-labelledby="resource-title"
+      >
+        <div class="section-heading">
+          <div>
+            <div class="section-eyebrow">CURATED FOR YOUR EVERYDAY</div>
+            <h2 id="resource-title">
+              <span data-i18n="resources.title">好资源，刚好合你心意</span><span class="title-dot">.</span>
+            </h2>
+          </div>
+          <p data-i18n="resources.subtitle">少一点折腾，多一点顺手。</p>
+        </div>
+        <div class="source-group" role="group" aria-label="资源来源" data-i18n-aria-label="resources.sources" hidden>
+        <div class="upstream-bar">
+          <span class="upstream-icon" data-icon="github"></span>
+          <div class="upstream-description">
+            <a
+              href="https://github.com/Valiumlove/MultiClientProxyCore"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Valiumlove / MultiClientProxyCore
+              <span data-icon="arrow-up-right"></span
+            ></a>
+            <p id="upstream-status" role="status">正在读取 Surge 上游目录…</p>
+          </div>
+          <button id="refresh-upstream">
+            <span data-icon="download"></span> <span data-i18n="source.refresh">刷新目录</span>
+          </button>
+        </div>
+        <div class="upstream-bar module-source-bar">
+          <span class="upstream-icon" data-icon="box"></span>
+          <div class="upstream-description">
+            <a
+              href="https://son.zhiaon.top/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Surge Modules <span data-icon="arrow-up-right"></span
+            ></a>
+            <p id="module-source-status" role="status">正在读取模块目录…</p>
+          </div>
+          <button id="refresh-modules">
+            <span data-icon="download"></span> <span data-i18n="source.refreshModules">刷新模块</span>
+          </button>
+        </div>
+        <div class="upstream-bar egern-hub-source-bar">
+          <span class="upstream-icon" data-icon="grid"></span>
+          <div class="upstream-description"><a href="https://egern.pages.dev/" target="_blank" rel="noopener noreferrer"><span data-i18n="source.egernHub">Egern Hub · 模块与小组件</span> <span data-icon="arrow-up-right"></span></a><p id="egern-hub-status" role="status">正在读取 Egern 模块与小组件目录…</p></div>
+          <button id="refresh-egern-hub"><span data-icon="download"></span> <span data-i18n="source.refresh">刷新目录</span></button>
+        </div>
+        <div class="upstream-bar egern-source-bar">
+          <span class="upstream-icon" data-icon="github"></span>
+          <div class="upstream-description"><a href="https://github.com/Valiumlove/MultiClientProxyCore" target="_blank" rel="noopener noreferrer">Valiumlove / MultiClientProxyCore · Egern <span data-icon="arrow-up-right"></span></a><p id="egern-source-status" role="status">正在读取 Egern 上游规则目录…</p></div>
+          <a class="source-docs-link" href="https://github.com/Valiumlove/MultiClientProxyCore/blob/main/rules/Egern/README.md" target="_blank" rel="noopener noreferrer"><span data-i18n="source.instructions">规则说明</span> <span data-icon="arrow-up-right"></span></a>
+          <button id="refresh-egern-upstream"><span data-icon="download"></span> <span data-i18n="source.refresh">刷新目录</span></button>
+        </div>
+        <div class="upstream-bar mihomo-source-bar">
+          <span class="upstream-icon" data-icon="github"></span>
+          <div class="upstream-description"><a href="https://github.com/Valiumlove/MultiClientProxyCore/tree/main/rules/Mihomo" target="_blank" rel="noopener noreferrer">Valiumlove / MultiClientProxyCore · Mihomo <span data-icon="arrow-up-right"></span></a><p id="mihomo-source-status" role="status">正在读取 Mihomo 上游规则目录…</p></div>
+          <a class="source-docs-link" href="https://github.com/Valiumlove/MultiClientProxyCore/blob/main/rules/Mihomo/README.md" target="_blank" rel="noopener noreferrer"><span data-i18n="source.instructions">规则说明</span> <span data-icon="arrow-up-right"></span></a>
+          <button id="refresh-mihomo-upstream"><span data-icon="download"></span> <span data-i18n="source.refresh">刷新目录</span></button>
+        </div>
+        </div>
+        <div class="resource-toolbar">
+          <div class="resource-tabs" role="tablist" aria-label="资源类型" data-i18n-aria-label="resources.types">
+            <button
+              class="resource-tab active"
+              role="tab"
+              aria-selected="true"
+              data-type="all"
+              aria-controls="resource-grid"
+            >
+              <span data-i18n="resources.all">全部资源</span> <span id="all-count">…</span>
+            </button>
+            <button class="resource-tab" role="tab" aria-selected="false" data-type="widget" aria-controls="resource-grid"><span data-i18n="resources.widgets">小组件</span> <span id="widget-count">…</span></button>
+            <button
+              class="resource-tab"
+              role="tab"
+              aria-selected="false"
+              data-type="rule"
+              aria-controls="resource-grid"
+            >
+              <span data-i18n="resources.rules">规则集</span> <span id="rule-count">…</span>
+            </button>
+            <button
+              class="resource-tab"
+              role="tab"
+              aria-selected="false"
+              data-type="module"
+              aria-controls="resource-grid"
+            >
+              <span data-i18n="resources.modules">功能模块</span> <span id="module-count">…</span>
+            </button>
+          </div>
+          <label class="search-box"
+            ><span data-icon="search"></span
+            ><input
+              id="search-input"
+              type="search"
+              placeholder="搜索组件、规则、模块…"
+              data-i18n-placeholder="resources.search"
+              autocomplete="off"
+              aria-label="搜索组件、规则、模块"
+              data-i18n-aria-label="resources.searchLabel"
+            /><kbd><span id="shortcut-key">⌘</span> K</kbd></label
+          >
+        </div>
+        <div class="collection-layout">
+          <aside class="sidebar" aria-label="资源分类" data-i18n-aria-label="resources.categories">
+            <div class="sidebar-label" data-i18n="resources.browseCategories">浏览分类</div>
+            <div class="category-list" id="category-list"></div>
+            <div class="sidebar-line"></div>
+            <button id="saved-filter" class="category-button saved-filter">
+              <span data-icon="bookmark"></span><span data-i18n="resources.saved">我的收藏</span
+              ><span class="category-count" id="saved-count">0</span>
+            </button>
+            <div class="sidebar-tip">
+              <span class="tip-symbol" data-icon="sparkles"></span>
+              <h3 data-i18n="resources.tipTitle">从容配置，轻松上手</h3>
+              <p data-i18n-html="resources.tipText">几步了解你的新资源<br />如何在客户端中使用。</p>
+              <button data-guide>
+                <span data-i18n="resources.viewGuide">查看使用指南</span> <span data-icon="arrow-up-right"></span>
+              </button>
+            </div>
+          </aside>
+          <div class="resource-content">
+            <div class="results-bar">
+              <div>
+                <span id="results-label">全部资源</span
+                ><span class="results-total" id="results-total">读取目录中</span
+                ><button id="clear-filters" hidden>
+                  <span data-i18n="resources.clear">清除筛选</span> <span data-icon="x"></span>
+                </button>
+              </div>
+              <label class="sort-control"
+                ><span data-icon="sliders"></span
+                ><select id="sort-select" aria-label="资源排序" data-i18n-aria-label="resources.sort">
+                  <option value="recommended" data-i18n="sort.recommended">常用优先</option>
+                  <option value="latest" data-i18n="sort.latest">最近更新</option>
+                  <option value="name" data-i18n="sort.name">名称排序</option>
+                  <option value="type" data-i18n="sort.type">类型排序</option></select
+                ><span data-icon="chevron-down"></span
+              ></label>
+            </div>
+            <div
+              class="resource-grid"
+              id="resource-grid"
+              role="tabpanel"
+              aria-live="polite"
+            ></div>
+            <div class="empty-state" id="empty-state" hidden>
+              <div class="empty-icon"><span data-icon="search"></span></div>
+              <h3 data-i18n="empty.title">还没有找到合适的资源</h3>
+              <p id="empty-description">换个关键词，或看看其他分类。</p>
+              <button class="button button-dark" id="empty-reset">
+                <span data-i18n="empty.reset">查看全部资源</span> <span data-icon="arrow-right"></span>
+              </button>
+            </div>
+            <nav
+              class="pagination"
+              id="pagination"
+              aria-label="资源分页"
+              data-i18n-aria-label="pagination.label"
+              hidden
+            >
+              <button id="previous-page" data-i18n="pagination.previous">← 上一页</button>
+              <p id="page-summary" aria-live="polite"></p>
+              <button id="next-page" data-i18n="pagination.next">下一页 →</button>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom-banner page-width">
+        <div class="banner-symbol"><span data-icon="command"></span></div>
+        <div>
+          <h2 data-i18n="banner.title">你的网络，你来定义。</h2>
+          <p data-i18n="banner.text">从一条规则开始，打造更合心意的连接体验。</p>
+        </div>
+        <button class="button button-dark" data-guide>
+          <span data-i18n="banner.start">开始使用</span> <span data-icon="arrow-up-right"></span>
+        </button>
+      </section>
+    </main>
+
+    <footer class="site-footer page-width">
+      <a href="#" class="brand footer-brand"
+        ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span
+        ><span
+          >lanxu<span class="brand-light">space</span
+          ><span class="brand-period">.</span></span
+        ></a
+      >
+      <p data-i18n="footer.credit">内容归各作者所有</p>
+    </footer>
+
+    <dialog
+      id="resource-dialog"
+      class="resource-dialog"
+      aria-labelledby="dialog-title"
+    >
+      <div class="dialog-top">
+        <span id="dialog-type" class="type-label"></span
+        ><button class="icon-button dialog-close" aria-label="关闭详情" data-i18n-aria-label="detail.close">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <div class="dialog-heading">
+        <div id="dialog-icon" class="resource-icon"></div>
+        <div>
+          <h2 id="dialog-title"></h2>
+          <p id="dialog-description"></p>
+        </div>
+      </div>
+      <div id="dialog-tags" class="card-tags"></div>
+      <div class="dialog-source" id="dialog-source" hidden>
+        <span id="dialog-updated"></span>
+        <a id="dialog-upstream-file" target="_blank" rel="noopener noreferrer" data-i18n="detail.repository"
+          >仓库文件 ↗</a
+        >
+        <a id="dialog-raw-link" target="_blank" rel="noopener noreferrer" data-i18n="detail.original"
+          >原始链接 ↗</a
+        >
+      </div>
+      <div class="detail-tabs" role="tablist" aria-label="资源详情" data-i18n-aria-label="detail.tabs">
+        <button
+          class="active"
+          role="tab"
+          aria-selected="true"
+          data-detail-tab="code"
+          aria-controls="detail-code-panel"
+        >
+          引用配置</button
+        ><button
+          role="tab"
+          aria-selected="false"
+          data-detail-tab="raw"
+          aria-controls="detail-raw-panel"
+          hidden
+        >
+          原始规则</button
+        ><button
+          role="tab"
+          aria-selected="false"
+          data-detail-tab="instructions"
+          data-i18n="detail.instructions"
+          aria-controls="detail-instructions-panel"
+        >
+          使用说明
+        </button>
+      </div>
+      <div id="policy-field" class="policy-field" hidden>
+        <label for="policy-input" data-i18n="detail.policy">策略或策略组</label>
+        <input
+          id="policy-input"
+          list="policy-options"
+          placeholder="填写 Surge 中已有的策略组名称"
+          autocomplete="off"
+          aria-describedby="policy-help"
+        />
+        <datalist id="policy-options">
+          <option value="DIRECT"></option>
+          <option value="REJECT"></option>
+          <option value="PROXY"></option>
+        </datalist>
+        <p id="policy-help">可选择 DIRECT、REJECT，或填写已有的策略组名称。</p>
+      </div>
+      <div id="detail-code-panel" role="tabpanel">
+        <div class="detail-code-header">
+          <span id="dialog-filename"></span
+          ><button id="code-copy" aria-label="复制配置" data-i18n-aria-label="detail.copyAria">
+            <span data-icon="copy"></span> <span data-i18n="detail.copy">复制</span>
+          </button>
+        </div>
+        <pre class="detail-code"><code id="dialog-code"></code></pre>
+      </div>
+      <div id="detail-raw-panel" role="tabpanel" hidden>
+        <div class="detail-code-header">
+          <span id="raw-status" role="status"></span
+          ><button id="raw-retry" data-i18n="detail.retry" hidden>重新加载</button>
+        </div>
+        <pre class="detail-code"><code id="dialog-raw-code"></code></pre>
+      </div>
+      <div
+        id="detail-instructions-panel"
+        class="detail-instructions"
+        role="tabpanel"
+        hidden
+      ></div>
+      <div class="dialog-notice">
+        <span data-icon="info"></span><span id="dialog-notice-text"></span>
+      </div>
+      <div class="dialog-actions">
+        <a class="button button-outline" id="install-resource" hidden
+          >导入 Surge <span data-icon="arrow-up-right"></span
+        ></a>
+        <button class="button button-outline" id="download-resource">
+          <span data-icon="download"></span> <span data-i18n="detail.download">下载文件</span></button
+        ><button class="button button-dark" id="dialog-copy">
+          <span data-icon="copy"></span> 复制配置
+        </button>
+      </div>
+    </dialog>
+
+    <dialog
+      id="guide-dialog"
+      class="guide-dialog"
+      aria-labelledby="guide-title"
+    >
+      <div class="dialog-top">
+        <span class="section-eyebrow">QUICK START</span
+        ><button class="icon-button dialog-close" aria-label="关闭使用指南" data-i18n-aria-label="guide.close">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <h2 id="guide-title" data-i18n="guide.title">几步，把好资源用起来。</h2>
+      <p class="guide-intro" data-i18n="guide.intro">先选择你的客户端，再查看对应的资源与使用说明。</p>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <span class="step-icon" data-icon="search"></span>
+          <div>
+            <h3 data-i18n="guide.discoverTitle">发现与预览</h3>
+            <p data-i18n="guide.discover">选择 Surge、Egern 或 Mihomo，通过分类或搜索找到资源。卡片标明适用客户端，点击「查看配置」确认格式与说明。</p>
+          </div>
+        </div>
+        <div class="guide-step">
+          <span class="step-icon" data-icon="layers"></span>
+          <div>
+            <h3 data-i18n="guide.surgeRulesTitle">Surge：使用规则集</h3>
+            <p data-i18n="guide.surgeRules">
+              点击「查看配置」，填写已有策略或策略组，复制 RULE-SET 引用到当前配置的 [Rule] 区域，并放在 FINAL 规则之前。引用直接指向上游，Surge 可继续获取上游更新。
+              卡片上的「复制链接」可复制原始规则集地址。
+            </p>
+          </div>
+        </div>
+        <div class="guide-step">
+          <span class="step-icon" data-icon="box"></span>
+          <div>
+            <h3 data-i18n="guide.surgeModulesTitle">Surge：安装功能模块</h3>
+            <p data-i18n="guide.surgeModules">
+              在已安装 Surge 的设备上，点击模块卡片的「一键导入」即可打开 Surge 安装入口；详情中也保留「导入 Surge」。
+              你还可以复制源链接、预览完整内容，或下载 .sgmodule 文件后在 Surge 中打开并安装。
+            </p>
+          </div>
+        </div>
+        <div class="guide-step"><span class="step-icon" data-icon="grid"></span><div><h3 data-i18n="guide.egernTitle">Egern：小组件、规则与模块</h3><p data-i18n="guide.egern">点击 Egern 模块或小组件卡片的「一键导入」，即可打开 Egern 模块添加入口，带入名称和源链接。规则集请在「查看配置」中填写已有策略，复制 YAML 引用并合并到当前配置。小组件安装后仍需按作者说明设置参数，再从 iOS 主屏幕添加 Egern 小组件。</p></div></div>
+        <div class="guide-step"><span class="step-icon" data-icon="layers"></span><div><h3 data-i18n="guide.mihomoTitle">Mihomo：使用 YAML 规则集</h3><p data-i18n="guide.mihomo">选择「Mihomo」浏览仓库规则。打开「查看配置」并填写已有策略组，复制 YAML，把 rule-providers 合并到同名映射，把 rules 条目合并到已有列表并放在 MATCH 之前。保留单个顶层字段，不要用规则片段覆盖完整配置；provider 使用 classical 与 yaml 格式。卡片支持复制源链接、预览和下载原始规则。</p></div></div>
+      </div>
+      <a class="button button-outline guide-docs" href="https://wiki.metacubex.one/config/rule-providers/" target="_blank" rel="noopener noreferrer"><span data-i18n="docs.mihomo">Mihomo 官方文档</span> <span data-icon="arrow-up-right"></span></a>
+      <a class="button button-outline guide-docs" href="https://egernapp.com/zh-CN/docs/" target="_blank" rel="noopener noreferrer"><span data-i18n="docs.egern">Egern 官方文档</span> <span data-icon="arrow-up-right"></span></a>
+      <a
+        class="button button-dark guide-docs"
+        href="https://manual.nssurge.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><span data-i18n="docs.readSurge">阅读 Surge 官方文档</span> <span data-icon="arrow-up-right"></span
+      ></a>
+    </dialog>
+    <nav class="main-nav floating-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
+      <button class="nav-item active" data-nav="all" aria-current="page"><span data-icon="grid"></span><span class="nav-label" data-i18n="nav.discover">发现</span></button>
+      <button class="nav-item" data-nav="widget"><span data-icon="window"></span><span class="nav-label" data-i18n="nav.widgets">小组件</span></button>
+      <button class="nav-item" data-nav="rule"><span data-icon="layers"></span><span class="nav-label" data-i18n="nav.rules">规则</span></button>
+      <button class="nav-item" data-nav="module"><span data-icon="box"></span><span class="nav-label" data-i18n="nav.modules">模块</span></button>
+      <button class="nav-item saved-nav" data-nav="saved"><span data-icon="bookmark"></span><span class="nav-label" data-i18n="nav.saved">收藏</span><span id="nav-saved-count" hidden>0</span></button>
+    </nav>
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span data-icon="check-circle"></span><span id="toast-message"></span>
+    </div>
+  </body>
+</html>
