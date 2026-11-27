@@ -1,0 +1,50 @@
+name: 同步上游目录
+
+# 每天 10:00（北京时间）拉一次上游，刷新 data/*.json 快照。
+# 上游挂了也不怕：脚本只在校验通过后才覆盖快照，失败就保留旧文件、
+# 在 data/sync-status.json 里记一笔，本次运行标红提醒。
+# Cloudflare Pages 会在 push 后自动重新部署，快照随之更新。
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 同步上游快照
+        id: sync
+        run: node scripts/sync-upstream.mjs
+        continue-on-error: true
+
+      - name: 提交有变化的快照
+        if: always()
+        run: |
+          git config user.name "lanxu-sync"
+          git config user.email "lanxu-sync@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet && echo "快照无变化" || git commit -m "chore(data): 同步上游目录 $(date -u +%F)"
+          git push
+
+      - name: 写运行摘要
+        if: always()
+        run: |
+          {
+            echo "## 上游同步结果"
+            echo ""
+            node -e "const s=require('./data/sync-status.json'); for (const x of s.sources) console.log('- ' + x.id + ': ' + x.status + (x.count!=null ? '（'+x.count+' 条，'+x.via+'）' : '') + (x.error ? ' — '+x.error : '')); console.log('- 镜像文件: '+s.mirrors.ok.length+' 成功，'+s.mirrors.failed.length+' 失败' + (s.mirrors.failed.length ? '（'+s.mirrors.failed.join(', ')+'）' : ''));"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 上游失败时标红
+        if: steps.sync.outcome == 'failure'
+        run: exit 1
