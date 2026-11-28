@@ -149,6 +149,26 @@ indexes.mihomo = await syncCatalog("mihomo-index",
   [`${RAW}/index/Mihomo.json`, `${JSDELIVR}/index/Mihomo.json`],
   "data/mihomo-index.json",
   (d) => validateIndex(d, "Mihomo", /^rules\/Mihomo\/[^/]+\.yaml$/));
+indexes.loon = await syncCatalog("loon-index",
+  [`${RAW}/index/Loon.json`, `${JSDELIVR}/index/Loon.json`],
+  "data/loon-index.json",
+  (d) => validateIndex(d, "Loon", /^rules\/Loon\/[^/]+\.list$/));
+indexes.quantumultx = await syncCatalog("quantumultx-index",
+  [`${RAW}/index/QuantumultX.json`, `${JSDELIVR}/index/QuantumultX.json`],
+  "data/quantumultx-index.json",
+  (d) => validateIndex(d, "QuantumultX", /^rules\/QuantumultX\/[^/]+\.list$/));
+indexes.shadowrocket = await syncCatalog("shadowrocket-index",
+  [`${RAW}/index/Shadowrocket.json`, `${JSDELIVR}/index/Shadowrocket.json`],
+  "data/shadowrocket-index.json",
+  (d) => validateIndex(d, "Shadowrocket", /^rules\/Shadowrocket\/[^/]+\.list$/));
+indexes.stash = await syncCatalog("stash-index",
+  [`${RAW}/index/Stash.json`, `${JSDELIVR}/index/Stash.json`],
+  "data/stash-index.json",
+  (d) => validateIndex(d, "Stash", /^rules\/Stash\/[^/]+\.yaml$/));
+indexes.singbox = await syncCatalog("singbox-index",
+  [`${RAW}/index/SingBox.json`, `${JSDELIVR}/index/SingBox.json`],
+  "data/singbox-index.json",
+  (d) => validateIndex(d, "SingBox", /^rules\/SingBox\/[^/]+\.json$/));
 await syncCatalog("modules-source",
   ["https://son.zhiaon.top/data/modules.json"],
   "data/modules-source.json", validateModules);
