@@ -72,10 +72,14 @@ const PAGE_SIZE = 12;
 const tr = (zh, en, params) => siteI18n.text(zh, en, params);
 const egernResources = typeof EGERN_RESOURCES === "undefined" ? [] : EGERN_RESOURCES;
 const egernNonRuleResources = egernResources.filter((resource) => resource.type !== "rule");
+const additionalProxyClientIds = Object.keys(PROXY_RULE_UPSTREAMS);
 let resources = [...egernNonRuleResources, ...moduleExamples];
 let ruleResources = [];
 let egernRuleResources = [];
 let mihomoRuleResources = [];
+const additionalRuleResources = Object.fromEntries(additionalProxyClientIds.map((client) => [client, []]));
+const additionalCatalogLoading = Object.fromEntries(additionalProxyClientIds.map((client) => [client, false]));
+const additionalCatalogModes = Object.fromEntries(additionalProxyClientIds.map((client) => [client, "loading"]));
 let egernHubResources = [];
 let importedModules = [];
 let saved = new Set();
@@ -164,11 +168,18 @@ function formatNumber(number) {
 }
 
 function resourceClient(resource) {
-  return resource.client === "mihomo" ? "mihomo" : resource.client === "egern" ? "egern" : "surge";
+  return ["surge", "egern", "mihomo", ...additionalProxyClientIds].includes(resource.client)
+    ? resource.client
+    : "surge";
 }
 
 function clientName(resource) {
-  return { surge: "Surge", egern: "Egern", mihomo: "Mihomo" }[resourceClient(resource)];
+  return {
+    surge: "Surge",
+    egern: "Egern",
+    mihomo: "Mihomo",
+    ...proxyRuleClientNames,
+  }[resourceClient(resource)];
 }
 
 function supportsResourceType(type) {
@@ -176,6 +187,11 @@ function supportsResourceType(type) {
     surge: ["rule", "module"],
     egern: ["widget", "rule", "module"],
     mihomo: ["rule"],
+    loon: ["rule", "module"],
+    quantumultx: ["rule", "module"],
+    shadowrocket: ["rule"],
+    singbox: ["rule"],
+    stash: ["rule"],
   };
   return type === "all" || (types[state.client] || []).includes(type);
 }
@@ -213,6 +229,9 @@ function resourceInstallUrl(resource) {
 }
 
 function typeName(resource) {
+  const client = resource.client || state.client;
+  if (resource.type === "module" && client === "quantumultx") return tr("重写", "Rewrites");
+  if (resource.type === "module" && client === "loon") return tr("插件", "Plugins");
   return {
     rule: tr("规则集", "Rule sets"),
     module: tr("功能模块", "Modules"),
@@ -221,6 +240,9 @@ function typeName(resource) {
 }
 
 function typeLabel(resource) {
+  const client = resource.client || state.client;
+  if (resource.type === "module" && client === "quantumultx") return "REWRITE";
+  if (resource.type === "module" && client === "loon") return "PLUGIN";
   return { rule: "RULE SET", module: "MODULE", widget: "WIDGET" }[resource.type] || "RESOURCE";
 }
 
@@ -314,7 +336,11 @@ function renderCategories() {
 
 function resourceSearchText(resource) {
   const english = resourceI18n(resource, "en");
-  const typeTerms = { rule: "rules rule sets 规则集", module: "modules 功能模块", widget: "widgets 小组件" };
+  const typeTerms = {
+    rule: "rules rule sets 规则集",
+    module: resourceClient(resource) === "quantumultx" ? "rewrites 重写" : resourceClient(resource) === "loon" ? "plugins 插件" : "modules 功能模块",
+    widget: "widgets 小组件",
+  };
   return [clientName(resource), resource.name, resource.description, ...resource.tags,
     resource.type, typeTerms[resource.type] || "", resource.filename, resource.author || "",
     resource.searchText || "", english.name, english.description, ...english.tags,
@@ -364,7 +390,9 @@ function renderResources() {
     ? egernCatalogLoading || egernHubLoading
     : state.client === "mihomo"
       ? mihomoCatalogLoading
-      : catalogLoading || moduleCatalogLoading;
+      : state.client === "surge"
+        ? catalogLoading || moduleCatalogLoading
+        : additionalCatalogLoading[state.client];
   const loading = refreshing && !resources.some((resource) => matchesClient(resource) &&
     (state.type === "all" || resource.type === state.type));
   const visible = resources.filter(
@@ -405,6 +433,8 @@ function renderResources() {
         ? tr("Mihomo 规则目录暂时无法加载，请稍后重试。", "The Mihomo rule catalog is unavailable. Please try again later.")
       : state.client === "mihomo" && state.type === "module"
         ? tr("Mihomo 当前收录规则集，切换「规则集」查看。", "Mihomo currently offers rule sets. Select Rule sets to browse them.")
+      : ["loon", "quantumultx"].includes(state.client) && state.type === "module"
+        ? tr("当前尚未收录{type}资源；规则集可在「规则集」中查看。", "No {type} resources are cataloged yet. Browse rule sets under Rule sets.", { type: typeName({ type: "module", client: state.client }) })
       : state.client !== "egern" && state.type === "widget"
         ? tr("小组件收录于 Egern，切换客户端查看。", "Widgets are available for Egern. Switch clients to browse them.")
       : tr("换个关键词，或看看其他分类。", "Try another keyword or browse a different category.");
@@ -427,12 +457,20 @@ function renderResources() {
   document.getElementById("next-page").disabled = state.page >= pageCount;
   document.querySelectorAll("[data-type]").forEach((button) => {
     button.hidden = !supportsResourceType(button.dataset.type);
+    if (button.dataset.type === "module") {
+      const label = button.querySelector("[data-i18n]");
+      if (label) label.textContent = typeName({ type: "module", client: state.client });
+    }
     const active = button.dataset.type === state.type;
     button.classList.toggle("active", active);
     button.setAttribute("aria-selected", String(active));
   });
   document.querySelectorAll(".floating-nav [data-nav]").forEach((button) => {
     button.hidden = button.dataset.nav !== "saved" && !supportsResourceType(button.dataset.nav);
+    if (button.dataset.nav === "module") {
+      const label = button.querySelector(".nav-label");
+      if (label) label.textContent = typeName({ type: "module", client: state.client });
+    }
     const active = state.savedOnly
         ? button.dataset.nav === "saved"
         : button.dataset.nav === state.type;
@@ -493,6 +531,7 @@ function rebuildResources() {
     ...ruleResources.slice(0, 3),
     ...egernRuleResources.slice(0, 3),
     ...mihomoRuleResources.slice(0, 3),
+    ...additionalProxyClientIds.flatMap((client) => additionalRuleResources[client].slice(0, 3)),
     ...importedModules.slice(0, 3),
     ...additionalEgernResources.filter((resource) => resource.type === "module").slice(0, 3),
     ...egernHubResources.filter((resource) => resource.type === "module").slice(0, 3),
@@ -500,6 +539,7 @@ function rebuildResources() {
     ...egernHubResources.filter((resource) => resource.type === "widget").slice(3),
     ...egernRuleResources.slice(3),
     ...mihomoRuleResources.slice(3),
+    ...additionalProxyClientIds.flatMap((client) => additionalRuleResources[client].slice(3)),
     ...additionalEgernResources.filter((resource) => resource.type === "module").slice(3),
     ...egernHubResources.filter((resource) => resource.type === "module").slice(3),
     ...ruleResources.slice(3),
@@ -541,6 +581,26 @@ async function loadCatalog() {
 }
 
 let egernCatalogMode = "loading";
+
+async function loadAdditionalProxyCatalog(clientId) {
+  if (!additionalProxyClientIds.includes(clientId) || additionalCatalogLoading[clientId]) return false;
+  additionalCatalogLoading[clientId] = true;
+  renderResources();
+  try {
+    const { index, mode } = await fetchProxyRuleCatalog(clientId);
+    if (mode === "live" || additionalCatalogModes[clientId] !== "live") {
+      additionalRuleResources[clientId] = createProxyRuleResources(index, clientId);
+      additionalCatalogModes[clientId] = mode;
+    }
+    return mode === "live";
+  } catch {
+    if (!additionalRuleResources[clientId].length) additionalCatalogModes[clientId] = "error";
+    return false;
+  } finally {
+    additionalCatalogLoading[clientId] = false;
+    rebuildResources();
+  }
+}
 
 async function loadMihomoCatalog() {
   if (mihomoCatalogLoading) return;
@@ -720,7 +780,10 @@ function ruleReference(resource) {
   if (resourceClient(resource) === "mihomo") {
     return createMihomoReference(resource, policyInput.value.trim() || tr("你的策略组", "Your policy"));
   }
-  if (resourceClient(resource) === "egern") {
+  if (additionalProxyClientIds.includes(resourceClient(resource))) {
+    return createProxyRuleReference(resource, policyInput.value.trim() || tr("你的策略组", "Your policy"));
+  }
+  if (resource.reference) {
     const policy = policyInput.value.trim() || tr("你的策略组", "Your policy");
     return (resource.reference || resource.sourceUrl || resource.content || "")
       .replaceAll('"{policy}"', JSON.stringify(policy))
@@ -752,9 +815,15 @@ function updateDialogControls() {
       ruleReference(selectedResource);
   const invalid = policyInput.value.length > 0 && !validPolicy();
   policyInput.setAttribute("aria-invalid", String(invalid));
+  const singbox = resourceClient(selectedResource) === "singbox";
+  document.querySelector('label[for="policy-input"]').textContent = singbox
+    ? tr("出站", "Outbound")
+    : tr("策略或策略组", "Policy or policy group");
   document.getElementById("policy-help").textContent = invalid
     ? tr("策略名称不能包含逗号或换行。", "Policy names cannot contain commas or line breaks.")
-    : tr("可选择 DIRECT、REJECT，或填写 {client} 中已有的策略组名称。", "Use DIRECT, REJECT, or an existing policy group in {client}.", { client: clientName(selectedResource) });
+    : singbox
+      ? tr("填写 Sing-box route 中已有的 outbound 名称。", "Enter an outbound name already defined in Sing-box route.")
+      : tr("可选择 DIRECT、REJECT，或填写 {client} 中已有的策略组名称。", "Use DIRECT, REJECT, or an existing policy group in {client}.", { client: clientName(selectedResource) });
 }
 
 async function copyResource(id, button, mode = "link") {
@@ -929,6 +998,14 @@ function englishResourceInstructions(resource, view) {
       <p class="source-line"><a href="${escapeHtml(resource.repositoryUrl || EGERN_SOURCE.repoUrl)}" target="_blank" rel="noopener noreferrer">Original source ↗</a> ·
       <a href="${escapeHtml(EGERN_SOURCE.docsUrl)}" target="_blank" rel="noopener noreferrer">Egern documentation ↗</a></p>`;
   }
+  if (resource.type === "rule" && additionalProxyClientIds.includes(resourceClient(resource))) {
+    const clientId = resourceClient(resource);
+    const upstreamClient = PROXY_RULE_UPSTREAMS[clientId].client;
+    return `<h3>Use this remote rule set in ${escapeHtml(clientName(resource))}</h3>
+      <p>${escapeHtml(view.instructions || "Merge the generated reference into your current client configuration and use an existing policy.")}</p>
+      <p>The source link points to the original ${escapeHtml(upstreamClient)} rule file. The preview shows its native format; copying or downloading includes the complete file.</p>
+      <p class="source-line"><a href="${escapeHtml(`${UPSTREAM.repoUrl}/blob/main/rules/${upstreamClient}/README.md`)}" target="_blank" rel="noopener noreferrer">Repository instructions ↗</a></p>`;
+  }
   if (resource.type === "rule") {
     return `<h3>Receive updates with a remote rule set</h3>
       <p>Enter an existing policy or group in Reference config. Copy the <code>RULE-SET</code> line
@@ -964,6 +1041,7 @@ function openResource(id, preserveState = false) {
   const isRule = resource.type === "rule";
   const egern = resourceClient(resource) === "egern";
   const mihomo = resourceClient(resource) === "mihomo";
+  const additionalProxyClient = additionalProxyClientIds.includes(resourceClient(resource));
   const reference = hasReference(resource);
   if (!preserveState) {
     ++rawPreviewRequest;
@@ -972,7 +1050,9 @@ function openResource(id, preserveState = false) {
     rawPreviewError = false;
     policyInput.value = "";
   }
-  policyInput.placeholder = tr("填写 {client} 中已有的策略组名称", "Enter an existing {client} policy group", { client: clientName(resource) });
+  policyInput.placeholder = resourceClient(resource) === "singbox"
+    ? tr("填写现有 outbound 名称", "Enter an existing outbound")
+    : tr("填写 {client} 中已有的策略组名称", "Enter an existing {client} policy group", { client: clientName(resource) });
   document.getElementById("dialog-title").textContent = view.name;
   document.getElementById("dialog-description").textContent =
     view.description;
@@ -1025,7 +1105,7 @@ function openResource(id, preserveState = false) {
       ? tr("资源链接", "Resource link")
       : tr("配置内容", "Configuration");
   document.getElementById("dialog-filename").textContent = reference
-    ? `${clientName(resource)} / ${mihomo ? "rule-providers + rules" : egern ? "rules" : "[Rule]"} · ${tr("远程规则集", "Remote rule set")}`
+    ? `${clientName(resource)} / ${mihomo ? "rule-providers + rules" : egern ? "rules" : resource.referenceFormatLabel || "[Rule]"} · ${tr("远程规则集", "Remote rule set")}`
     : resource.filename;
   document.getElementById("dialog-code").textContent = reference
     ? ruleReference(resource)
@@ -1040,6 +1120,8 @@ function openResource(id, preserveState = false) {
     ? isRule
       ? tr("填写 Egern 中已有的策略，复制 YAML 引用并合并到当前配置的 rules 列表。", "Enter an existing Egern policy, then copy the YAML reference and merge it into your configuration's rules list.")
       : `Egern · ${resource.sourceUrl ? tr("使用前请阅读作者说明，模块可能需要设置参数。", "Read the author's instructions before use; modules may require parameters.") : tr("本地 YAML 配置示例，请按说明合并配置。", "Local YAML example. Follow the instructions to merge it into your configuration.")}`
+    : additionalProxyClient && isRule
+      ? tr("{client} 原生规则集 · 引用指向原始规则文件。请将配置片段合并到当前客户端设置。", "Native {client} rule set · The reference points to the original rule file. Merge the snippet into your current client configuration.", { client: clientName(resource) })
     : isRule
     ? tr("引用直接指向上游。策略或策略组名称需与 Surge 当前配置一致。", "References point to the original source. Use a policy or group that exists in your current Surge configuration.")
     : resource.sourceUrl
@@ -1072,6 +1154,11 @@ function openResource(id, preserveState = false) {
           : "在 Egern 的工具 → 模块中添加资源链接；导入前请阅读原作者的参数与使用说明。"))
         .split(/\n\s*\n/).map((paragraph) => `<p>${escapeHtml(paragraph).replaceAll("\n", "<br>")}</p>`).join("")}
       <p class="source-line"><a href="${escapeHtml(resource.repositoryUrl || EGERN_SOURCE.repoUrl)}" target="_blank" rel="noopener noreferrer">资源来源 ↗</a> · <a href="${escapeHtml(EGERN_SOURCE.docsUrl)}" target="_blank" rel="noopener noreferrer">Egern 官方文档 ↗</a></p>`
+    : additionalProxyClient && isRule
+    ? `<h3>在 ${escapeHtml(clientName(resource))} 中使用原生远程规则</h3>
+      <p>${escapeHtml(resource.instructions || "将引用合并到现有客户端配置中，并使用已有策略。")}</p>
+      <p>「原始规则」保留上游文件格式；大型文件预览前 200 行，复制原文和下载会使用完整文件。</p>
+      <p class="source-line"><a href="${escapeHtml(`${UPSTREAM.repoUrl}/blob/main/rules/${PROXY_RULE_UPSTREAMS[resourceClient(resource)].client}/README.md`)}" target="_blank" rel="noopener noreferrer">仓库规则说明 ↗</a> · <a href="${escapeHtml(resource.repositoryUrl)}" target="_blank" rel="noopener noreferrer">上游规则文件 ↗</a></p>`
     : isRule
     ? `<h3>通过远程规则集使用上游更新</h3>
       <p>在「引用配置」中填写已有策略或策略组，复制 <code>RULE-SET</code> 引用，
@@ -1386,6 +1473,13 @@ async function primeBundledCatalogs() {
       mihomoCatalogMode = "snapshot";
       showCatalog();
     },
+    ...additionalProxyClientIds.map((clientId) => async () => {
+      const index = await fetchProxyRuleIndex(clientId, `data/${clientId}-index.json`);
+      if (!canSeed(additionalCatalogModes[clientId])) return;
+      additionalRuleResources[clientId] = createProxyRuleResources(index, clientId);
+      additionalCatalogModes[clientId] = "snapshot";
+      showCatalog();
+    }),
     async () => {
       const modules = await fetchModuleResources("data/modules-source.json");
       if (!canSeed(moduleCatalogMode)) return;
@@ -1408,7 +1502,14 @@ async function primeBundledCatalogs() {
 // after 24 hours; sleeping/offline tabs catch up when visible and connected.
 const CATALOG_REFRESH_INTERVAL = 24 * 60 * 60 * 1000;
 const CATALOG_RETRY_INTERVAL = 15 * 60 * 1000;
-const upstreamRefreshSources = [loadCatalog, loadEgernCatalog, loadMihomoCatalog, loadEgernHub, loadModules]
+const upstreamRefreshSources = [
+  loadCatalog,
+  loadEgernCatalog,
+  loadMihomoCatalog,
+  ...additionalProxyClientIds.map((clientId) => () => loadAdditionalProxyCatalog(clientId)),
+  loadEgernHub,
+  loadModules,
+]
   .map((load) => ({ load, nextRefreshAt: 0 }));
 let upstreamRefreshInFlight = null;
 

@@ -7,22 +7,22 @@
     <meta
       name="description"
       data-i18n-content="page.description"
-      content="精选 Surge、Egern 与 Mihomo 规则、小组件及模块。发现、预览、收藏，让每一次连接更从容。"
+      content="整理 Surge、Egern、Mihomo、Quantumult X、Loon、Shadowrocket、Stash 与 Sing-box 规则。发现、预览、收藏，让每一次连接更从容。"
     />
     <title data-i18n="page.title">Lanxu Space · 让连接更从容</title>
     <link rel="icon" href="favicon.ico?v=bars-a1" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=bars-a1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=bars-a1" />
-    <link rel="stylesheet" href="styles.css?v=compact-home-1" />
-    <script src="i18n.js?v=compact-home-1" defer></script>
-    <script src="upstream.js?v=compact-home-2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=client-rules-1" />
+    <script src="i18n.js?v=client-rules-1" defer></script>
+    <script src="upstream.js?v=client-rules-1" defer></script>
     <script src="module-source.js" defer></script>
     <script src="resource-icons.js" defer></script>
     <script src="motion.js?v=compact-home-1" defer></script>
     <script src="egern-source.js?v=compact-home-1" defer></script>
     <script src="resource-content.js" defer></script>
     <script src="resource-i18n.js" defer></script>
-    <script src="app.js?v=client-types-1" defer></script>
+    <script src="app.js?v=client-rules-1" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -40,7 +40,7 @@
           <button class="guide-link" data-guide>
             <span data-i18n="header.guide">使用指南</span> <span data-icon="arrow-up-right"></span>
           </button>
-          <span class="header-caption">Surge · Egern · Mihomo</span><span class="header-divider"></span>
+          <span class="header-caption" data-i18n="header.clients">八款客户端</span><span class="header-divider"></span>
           <label class="language-control">
             <select id="language-select" aria-label="选择网站语言" data-i18n-aria-label="header.language">
               <option value="zh-CN" lang="zh-CN">简体中文</option>
@@ -67,12 +67,17 @@
           </div>
           <h1 id="hero-title" data-i18n-html="hero.title">让连接世界，<br />变得<span class="highlight">从容一点<span class="highlight-dot">.</span></span></h1>
           <p class="hero-description" data-i18n-html="hero.description">
-            好用的规则、实用的模块、恰到好处的小组件。<br />为 Surge、Egern 与 Mihomo，整理你的每一种连接。
+            好用的规则、实用的模块、恰到好处的小组件。<br />为八款代理客户端，整理你的每一种连接。
           </p>
           <div class="client-switch" role="group" aria-label="选择客户端" data-i18n-aria-label="client.choose">
             <button class="active" data-client="surge" aria-pressed="true"><img class="client-symbol" src="assets/clients/surge.png" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Surge</button>
             <button data-client="egern" aria-pressed="false"><img class="client-symbol" src="assets/clients/egern.png" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Egern</button>
             <button data-client="mihomo" aria-pressed="false"><img class="client-symbol" src="assets/clients/mihomo.jpg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Mihomo<span class="new-badge">NEW</span></button>
+            <button data-client="quantumultx" aria-pressed="false"><img class="client-symbol" src="assets/clients/quantumultx.svg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Quantumult X</button>
+            <button data-client="loon" aria-pressed="false"><img class="client-symbol" src="assets/clients/loon.svg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Loon</button>
+            <button data-client="shadowrocket" aria-pressed="false"><img class="client-symbol" src="assets/clients/shadowrocket.svg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Shadowrocket</button>
+            <button data-client="stash" aria-pressed="false"><img class="client-symbol" src="assets/clients/stash.svg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Stash</button>
+            <button data-client="singbox" aria-pressed="false"><img class="client-symbol" src="assets/clients/singbox.svg" width="20" height="20" alt="" aria-hidden="true" decoding="async" />Sing-box</button>
           </div>
           <div class="hero-actions">
             <a class="button button-dark" href="#explore"
@@ -439,6 +444,7 @@
         </div>
         <div class="guide-step"><span class="step-icon" data-icon="grid"></span><div><h3 data-i18n="guide.egernTitle">Egern：小组件、规则与模块</h3><p data-i18n="guide.egern">点击 Egern 模块或小组件卡片的「一键导入」，即可打开 Egern 模块添加入口，带入名称和源链接。规则集请在「查看配置」中填写已有策略，复制 YAML 引用并合并到当前配置。小组件安装后仍需按作者说明设置参数，再从 iOS 主屏幕添加 Egern 小组件。</p></div></div>
         <div class="guide-step"><span class="step-icon" data-icon="layers"></span><div><h3 data-i18n="guide.mihomoTitle">Mihomo：使用 YAML 规则集</h3><p data-i18n="guide.mihomo">选择「Mihomo」浏览仓库规则。打开「查看配置」并填写已有策略组，复制 YAML，把 rule-providers 合并到同名映射，把 rules 条目合并到已有列表并放在 MATCH 之前。保留单个顶层字段，不要用规则片段覆盖完整配置；provider 使用 classical 与 yaml 格式。卡片支持复制源链接、预览和下载原始规则。</p></div></div>
+        <div class="guide-step"><span class="step-icon" data-icon="layers"></span><div><h3 data-i18n="guide.additionalClientsTitle">更多客户端：原生远程规则</h3><p data-i18n="guide.additionalClients">选择 Quantumult X、Loon、Shadowrocket、Stash 或 Sing-box 后，打开规则卡片中的「查看配置」，复制该客户端对应的远程规则或配置片段，再合并到现有配置。Quantumult X 的「重写」与 Loon 的「插件」分类目前为空；小组件仅适用于 Egern。</p></div></div>
       </div>
       <a class="button button-outline guide-docs" href="https://wiki.metacubex.one/config/rule-providers/" target="_blank" rel="noopener noreferrer"><span data-i18n="docs.mihomo">Mihomo 官方文档</span> <span data-icon="arrow-up-right"></span></a>
       <a class="button button-outline guide-docs" href="https://egernapp.com/zh-CN/docs/" target="_blank" rel="noopener noreferrer"><span data-i18n="docs.egern">Egern 官方文档</span> <span data-icon="arrow-up-right"></span></a>

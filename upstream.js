@@ -40,6 +40,101 @@ const MIHOMO_UPSTREAM = {
   docsUrl: "https://wiki.metacubex.one/config/rule-providers/",
 };
 
+const PROXY_RULE_UPSTREAMS = Object.freeze({
+  loon: {
+    client: "Loon",
+    indexUrl: "https://raw.githubusercontent.com/Valiumlove/MultiClientProxyCore/main/index/Loon.json",
+    extension: "list",
+    tabName: "插件",
+  },
+  quantumultx: {
+    client: "QuantumultX",
+    indexUrl: "https://raw.githubusercontent.com/Valiumlove/MultiClientProxyCore/main/index/QuantumultX.json",
+    extension: "list",
+    tabName: "重写",
+  },
+  shadowrocket: {
+    client: "Shadowrocket",
+    indexUrl: "https://raw.githubusercontent.com/Valiumlove/MultiClientProxyCore/main/index/Shadowrocket.json",
+    extension: "list",
+  },
+  singbox: {
+    client: "SingBox",
+    indexUrl: "https://raw.githubusercontent.com/Valiumlove/MultiClientProxyCore/main/index/SingBox.json",
+    extension: "json",
+  },
+  stash: {
+    client: "Stash",
+    indexUrl: "https://raw.githubusercontent.com/Valiumlove/MultiClientProxyCore/main/index/Stash.json",
+    extension: "yaml",
+  },
+});
+
+const proxyRuleClientNames = Object.freeze({
+  loon: "Loon",
+  quantumultx: "Quantumult X",
+  shadowrocket: "Shadowrocket",
+  singbox: "Sing-box",
+  stash: "Stash",
+});
+
+function validateProxyRuleIndex(index, clientId) {
+  const source = PROXY_RULE_UPSTREAMS[clientId];
+  if (!source || !index || index.client !== source.client || !Array.isArray(index.rules) || !index.rules.length) {
+    throw new Error(`${source?.client || "客户端"} 规则索引格式不正确。`);
+  }
+  const names = new Set();
+  const expectedPath = new RegExp(`^rules/${source.client}/[^/]+\\.${source.extension}$`);
+  for (const entry of index.rules) {
+    if (
+      !entry ||
+      typeof entry.name !== "string" ||
+      !entry.name.trim() ||
+      names.has(entry.name) ||
+      typeof entry.file !== "string" ||
+      !expectedPath.test(entry.file) ||
+      entry.file.includes("\\") ||
+      /[\r\n?#]/.test(entry.file) ||
+      !Number.isInteger(entry.total_line_count) ||
+      entry.total_line_count < 0
+    ) {
+      throw new Error(`${source.client} 规则索引包含无效条目。`);
+    }
+    names.add(entry.name);
+  }
+}
+
+async function fetchProxyRuleIndex(clientId, url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      cache: "no-cache",
+      credentials: "omit",
+    });
+    if (!response.ok) throw new Error(`${proxyRuleClientNames[clientId]} 规则索引请求失败（${response.status}）。`);
+    const index = await response.json();
+    validateProxyRuleIndex(index, clientId);
+    return index;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchProxyRuleCatalog(clientId) {
+  const source = PROXY_RULE_UPSTREAMS[clientId];
+  for (const url of [source.indexUrl, `${JSDELIVR_BASE}/index/${source.client}.json`]) {
+    try {
+      return { index: await fetchProxyRuleIndex(clientId, url), mode: "live" };
+    } catch { /* 换下一条通道 */ }
+  }
+  return {
+    index: await fetchProxyRuleIndex(clientId, `data/${clientId}-index.json`),
+    mode: "snapshot",
+  };
+}
+
 const EGERN_HUB_UPSTREAM = {
   homeUrl: "https://egern.pages.dev/",
 };
@@ -240,6 +335,118 @@ function classifyRuleResource(entry) {
   return groups.find(([, pattern]) => pattern.test(text))?.[0] || "other";
 }
 
+function createProxyRuleReference(resource, policy = "{policy}") {
+  switch (resource.client) {
+    case "loon":
+    case "shadowrocket":
+      return `RULE-SET,${resource.sourceUrl},${policy}`;
+    case "quantumultx":
+      return `${resource.sourceUrl}, tag=${resource.name}, force-policy=${policy}, update-interval=86400`;
+    case "singbox":
+      return JSON.stringify({
+        route: {
+          rule_set: [{
+            type: "remote",
+            tag: resource.providerName,
+            format: "source",
+            url: resource.sourceUrl,
+            download_detour: "direct",
+          }],
+          rules: [{
+            rule_set: [resource.providerName],
+            action: "route",
+            outbound: policy,
+          }],
+        },
+      }, null, 2);
+    case "stash":
+      return [
+        "rule-providers:",
+        `  ${resource.providerName}:`,
+        "    type: http",
+        "    behavior: classical",
+        `    url: ${JSON.stringify(resource.sourceUrl)}`,
+        `    path: ${JSON.stringify(`./ruleset/${resource.providerName}.yaml`)}`,
+        "    interval: 86400",
+        "",
+        "rules:",
+        `  - ${JSON.stringify(`RULE-SET,${resource.providerName},${policy}`)}`,
+      ].join("\n");
+    default:
+      return "";
+  }
+}
+
+function createProxyRuleResources(index, clientId) {
+  validateProxyRuleIndex(index, clientId);
+  const source = PROXY_RULE_UPSTREAMS[clientId];
+  const clientName = proxyRuleClientNames[clientId];
+  const preferredRanks = new Map(recommendedRuleNames.map((name, rank) => [name, rank]));
+  const commonIcons = new Map([
+    ["Apple", "apple"],
+    ["GitHub", "github"],
+    ["Telegram", "send"],
+    ["Microsoft", "window"],
+  ]);
+  return index.rules.map((entry) => {
+    const category = classifyRuleResource(entry);
+    const categoryInfo = categories.find((item) => item.id === category);
+    const encodedPath = entry.file.split("/").map(encodeURIComponent).join("/");
+    const displayName = typeof entry.chinese_name === "string" && entry.chinese_name.trim()
+      ? entry.chinese_name.trim()
+      : entry.name;
+    const ruleTypes = Array.isArray(entry.types)
+      ? entry.types.filter((type) => typeof type === "string")
+      : [];
+    const sourceUrl = `${UPSTREAM.rawBase}/${encodedPath}`;
+    const safeName = entry.name.toLowerCase().replace(/[^a-z0-9_.-]+/g, "-").replace(/^-+|-+$/g, "") || "rule";
+    const resource = {
+      id: `${clientId}:${entry.name}`,
+      client: clientId,
+      name: entry.name,
+      type: "rule",
+      category,
+      icon: commonIcons.get(entry.name) || categoryInfo.icon,
+      description: `${displayName}相关的 ${clientName} 原生规则集。`,
+      tags: [displayName, categoryInfo.name, ...ruleTypes.slice(0, 2)],
+      ...ruleCategoryStyles[category],
+      featured: preferredRanks.has(entry.name),
+      filename: entry.file.split("/").pop(),
+      sourceUrl,
+      repositoryUrl: `${UPSTREAM.repoUrl}/blob/main/${encodedPath}`,
+      lineCount: entry.total_line_count,
+      updatedAt: typeof entry.rule_updated_at === "string" && Number.isFinite(Date.parse(entry.rule_updated_at))
+        ? entry.rule_updated_at
+        : null,
+      author: "Valiumlove",
+      sourceName: `MultiClientProxyCore · ${clientName}`,
+      upstreamName: entry.name,
+      providerName: `lanxu-${clientId}-${safeName}`,
+      referenceFormatLabel: {
+        loon: "[Rule]",
+        quantumultx: "[filter_remote]",
+        shadowrocket: "[Rule]",
+        singbox: "route.rule_set + rules",
+        stash: "rule-providers + rules",
+      }[clientId],
+      instructions: {
+        loon: "将 RULE-SET 引用放入 Loon 配置的 [Rule] 区域，填写 Loon 中已有的策略，并置于兜底规则之前。此链接指向仓库中的 Loon 原生 .list 规则。",
+        quantumultx: "将远程规则行放入 Quantumult X 的 [filter_remote] 区域；tag 使用规则名称，force-policy 填写客户端中已有的策略。此链接指向仓库中的 Quantumult X 原生 .list 规则。",
+        shadowrocket: "将 RULE-SET 引用放入 Shadowrocket 配置的 [Rule] 区域，填写客户端中已有的策略，并置于兜底规则之前。此链接指向仓库中的 Shadowrocket 原生 .list 规则。",
+        singbox: "把 route.rule_set 与 route.rules 的条目合并进现有 Sing-box route 配置，填写已存在的 outbound 名称。远程集合采用 source 格式并指向仓库中的原生 JSON 规则文件；不要用片段替换整份配置。",
+        stash: "将 rule-providers 条目合并到 Stash 已有的同名映射，再把 RULE-SET 条目加入 rules 列表并置于 MATCH 之前。策略组名称须已存在；引用指向仓库中的 Stash 原生 YAML 规则。",
+      }[clientId],
+    };
+    resource.reference = createProxyRuleReference(resource);
+    return resource;
+  }).sort((first, second) => {
+    const firstRank = preferredRanks.get(first.name) ?? Infinity;
+    const secondRank = preferredRanks.get(second.name) ?? Infinity;
+    if (firstRank !== secondRank) return firstRank - secondRank;
+    return first.name.localeCompare(second.name, "en", { numeric: true, sensitivity: "base" });
+  });
+}
+
 function createRuleResources(index) {
   validateSurgeIndex(index);
   const preferredRanks = new Map(
@@ -284,7 +491,6 @@ function createRuleResources(index) {
         sourceUrl: `${UPSTREAM.rawBase}/${encodedPath}`,
         repositoryUrl: `${UPSTREAM.repoUrl}/blob/main/${encodedPath}`,
         // 本站镜像（仅置顶规则有）：上游删库时详情页可改链到这里。
-        // 用法见 README"前端还要改的一小处"；没接之前它只是个备用字段，不影响现有逻辑。
         mirrorUrl: MIRRORED_RULES.has(entry.name)
           ? `data/mirror/surge/${entry.file.split("/").pop()}`
           : "",
