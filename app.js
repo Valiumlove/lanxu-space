@@ -171,6 +171,15 @@ function clientName(resource) {
   return { surge: "Surge", egern: "Egern", mihomo: "Mihomo" }[resourceClient(resource)];
 }
 
+function supportsResourceType(type) {
+  const types = {
+    surge: ["rule", "module"],
+    egern: ["widget", "rule", "module"],
+    mihomo: ["rule"],
+  };
+  return type === "all" || (types[state.client] || []).includes(type);
+}
+
 function matchesClient(resource) {
   return resourceClient(resource) === state.client;
 }
@@ -346,6 +355,10 @@ function renderCatalogStatuses() {
 }
 
 function renderResources() {
+  if (!supportsResourceType(state.type)) {
+    state.type = "all";
+    state.page = 1;
+  }
   const query = state.query.trim().toLocaleLowerCase();
   const refreshing = state.client === "egern"
     ? egernCatalogLoading || egernHubLoading
@@ -413,11 +426,13 @@ function renderResources() {
   document.getElementById("previous-page").disabled = state.page <= 1;
   document.getElementById("next-page").disabled = state.page >= pageCount;
   document.querySelectorAll("[data-type]").forEach((button) => {
+    button.hidden = !supportsResourceType(button.dataset.type);
     const active = button.dataset.type === state.type;
     button.classList.toggle("active", active);
     button.setAttribute("aria-selected", String(active));
   });
   document.querySelectorAll(".floating-nav [data-nav]").forEach((button) => {
+    button.hidden = button.dataset.nav !== "saved" && !supportsResourceType(button.dataset.nav);
     const active = state.savedOnly
         ? button.dataset.nav === "saved"
         : button.dataset.nav === state.type;
@@ -1161,7 +1176,7 @@ document.addEventListener("click", (event) => {
     renderResources();
   }
   const typeButton = event.target.closest("[data-type]");
-  if (typeButton) {
+  if (typeButton && supportsResourceType(typeButton.dataset.type)) {
     state.type = typeButton.dataset.type;
     state.page = 1;
     renderResources();
@@ -1172,8 +1187,7 @@ document.addEventListener("click", (event) => {
     resetFilters();
   }
   const navButton = event.target.closest("[data-nav]");
-  if (navButton) {
-    if (navButton.dataset.nav === "widget") state.client = "egern";
+  if (navButton && (navButton.dataset.nav === "saved" || supportsResourceType(navButton.dataset.nav))) {
     resetFilters();
     if (navButton.dataset.nav === "saved") state.savedOnly = true;
     else state.type = navButton.dataset.nav;

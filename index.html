@@ -22,7 +22,7 @@
     <script src="egern-source.js?v=compact-home-1" defer></script>
     <script src="resource-content.js" defer></script>
     <script src="resource-i18n.js" defer></script>
-    <script src="app.js?v=compact-home-2" defer></script>
+    <script src="app.js?v=client-types-1" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -166,7 +166,7 @@
             >
               <span data-i18n="resources.all">全部资源</span> <span id="all-count">…</span>
             </button>
-            <button class="resource-tab" role="tab" aria-selected="false" data-type="widget" aria-controls="resource-grid"><span data-i18n="resources.widgets">小组件</span> <span id="widget-count">…</span></button>
+            <button class="resource-tab" role="tab" aria-selected="false" data-type="widget" aria-controls="resource-grid" hidden><span data-i18n="resources.widgets">小组件</span> <span id="widget-count">…</span></button>
             <button
               class="resource-tab"
               role="tab"
@@ -452,7 +452,7 @@
     </dialog>
     <nav class="main-nav floating-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
       <button class="nav-item active" data-nav="all" aria-current="page"><span data-icon="grid"></span><span class="nav-label" data-i18n="nav.discover">发现</span></button>
-      <button class="nav-item" data-nav="widget"><span data-icon="window"></span><span class="nav-label" data-i18n="nav.widgets">小组件</span></button>
+      <button class="nav-item" data-nav="widget" hidden><span data-icon="window"></span><span class="nav-label" data-i18n="nav.widgets">小组件</span></button>
       <button class="nav-item" data-nav="rule"><span data-icon="layers"></span><span class="nav-label" data-i18n="nav.rules">规则</span></button>
       <button class="nav-item" data-nav="module"><span data-icon="box"></span><span class="nav-label" data-i18n="nav.modules">模块</span></button>
       <button class="nav-item saved-nav" data-nav="saved"><span data-icon="bookmark"></span><span class="nav-label" data-i18n="nav.saved">收藏</span><span id="nav-saved-count" hidden>0</span></button>
